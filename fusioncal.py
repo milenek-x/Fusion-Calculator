@@ -234,15 +234,13 @@ show_time_checkbox.pack(side=LEFT)
 
 loop_active = False  # global variable set to false
 
+break_list = {1: None, 2: None, 3: None, 4: None}
 
-def check_breaks():  # new loop function that runs set_breaks and reschedules
-	set_breaks()  # for 1 second later.
+def check_breaks():
+	set_breaks()
 	root.after(1000, check_breaks)
 
-
-def set_breaks():
-	sri_lankan_time = pytz.timezone("Asia/Colombo")
-	check_break = datetime.now(sri_lankan_time).strftime("%H:%M:%S")
+def update_breaks():  # new loop function that runs set_breaks and reschedules
 
 	first_break_time = f'{first_break_hour_value.get()}:{first_break_minute_value.get()}:{first_break_second_value.get()}'
 
@@ -252,11 +250,20 @@ def set_breaks():
 
 	logout_time = f'{logout_hour_value.get()}:{logout_minute_value.get()}:{logout_second_value.get()}'
 
-	break_times = [
-	 first_break_time, second_break_time, meal_break_time, logout_time
-	]
+	break_list[1] = first_break_time
+	break_list[2] = second_break_time
+	break_list[3] = meal_break_time
+	break_list[4] = logout_time
 
-	if check_break == break_times[0]:
+	print(break_list)
+	set_breaks()
+
+
+def set_breaks():
+	sri_lankan_time = pytz.timezone("Asia/Colombo")
+	check_break = datetime.now(sri_lankan_time).strftime("%H:%M:%S")
+
+	if check_break == break_list[1]:
 		popup_first_break = Toplevel(root)
 		popup_first_break.title('Official Break')
 		popup_first_break_title_bar = Label(popup_first_break,
@@ -264,7 +271,7 @@ def set_breaks():
 		                                    fg='Red')
 		popup_first_break_title_bar.pack()
 		print('Working')
-	elif check_break == break_times[1]:
+	elif check_break == break_list[2]:
 		popup_second_break = Toplevel(root)
 		popup_second_break.title('Official Break 2')
 		popup_second_break_title_bar = Label(popup_second_break,
@@ -272,7 +279,7 @@ def set_breaks():
 		                                     fg='Red')
 		popup_second_break_title_bar.pack()
 		print('Working')
-	elif check_break == break_times[2]:
+	elif check_break == break_list[3]:
 		popup_meal_break = Toplevel(root)
 		popup_meal_break.title('Official Break')
 		popup_meal_break_title_bar = Label(popup_meal_break,
@@ -280,7 +287,7 @@ def set_breaks():
 		                                   fg='Red')
 		popup_meal_break_title_bar.pack()
 		print('Working')
-	elif check_break == break_times[2]:
+	elif check_break == break_list[4]:
 		popup_logout = Toplevel(root)
 		popup_logout.title('Official Break')
 		popup_logout_title_bar = Label(popup_logout, text='LOGOUT', fg='Red')
@@ -289,14 +296,14 @@ def set_breaks():
 	else:
 		print(check_break)
 	global loop_active
-	if not loop_active:  #  This will only run when loop_active is false
-		loop_active = True  # Set loop_active to True so it doesn't run again
+	if not loop_active:
+		loop_active = True
 		check_breaks()
 
 
 set_breaks_button = Button(scheduler_bottom_frame,
                            text='Set',
-                           command=set_breaks)
+                           command=update_breaks)
 set_breaks_button.pack(side=RIGHT, fill=BOTH)
 
 right_pane = Frame(root)
@@ -360,177 +367,3 @@ price_of_one_ticket_spinbox.grid(row=1, column=1)
 
 def calculation():
 	no_of_tickets_calculation = int(no_of_tickets_spinbox.get())
-	price_of_one_ticket_calculation = float(price_of_one_ticket_spinbox.get())
-
-	ticket_price_calculation = "{0:,.2f}".format(price_of_one_ticket_calculation *
-	                                             no_of_tickets_calculation)
-	ticket_price_entry.config(state=NORMAL)
-	ticket_price_entry.delete(0, END)
-	ticket_price_entry.insert(END, ticket_price_calculation)
-	ticket_price_entry.config(state=DISABLED)
-
-	reservation_charge_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) * 0.25)
-	reservation_charge_entry.config(state=NORMAL)
-	reservation_charge_entry.delete(0, END)
-	reservation_charge_entry.insert(END, reservation_charge_calculation)
-	reservation_charge_entry.config(state=DISABLED)
-
-	total_ticket_price_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) +
-	 float(reservation_charge_calculation.replace(',', '')))
-	total_ticket_price_entry.config(state=NORMAL)
-	total_ticket_price_entry.delete(0, END)
-	total_ticket_price_entry.insert(END, total_ticket_price_calculation)
-	total_ticket_price_entry.config(state=DISABLED)
-
-	other_commission_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) * (5 / 100))
-	other_commission_entry.config(state=NORMAL)
-	other_commission_entry.delete(0, END)
-	other_commission_entry.insert(END, other_commission_calculation)
-	other_commission_entry.config(state=DISABLED)
-
-	dialog_commission_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) * (12 / 100))
-	dialog_commission_entry.config(state=NORMAL)
-	dialog_commission_entry.delete(0, END)
-	dialog_commission_entry.insert(END, dialog_commission_calculation)
-	dialog_commission_entry.config(state=DISABLED)
-
-	tax_amount_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) * (3.05 / 100))
-	tax_amount_entry.config(state=NORMAL)
-	tax_amount_entry.delete(0, END)
-	tax_amount_entry.insert(END, tax_amount_calculation)
-	tax_amount_entry.config(state=DISABLED)
-
-	dialog_commission_inclusive_taxes_calculation = "{0:,.2f}".format(
-	 float(dialog_commission_calculation.replace(',', '')) +
-	 float(tax_amount_calculation.replace(',', '')))
-	dialog_commission_inclusive_taxes_entry.config(state=NORMAL)
-	dialog_commission_inclusive_taxes_entry.delete(0, END)
-	dialog_commission_inclusive_taxes_entry.insert(
-	 END, dialog_commission_inclusive_taxes_calculation)
-	dialog_commission_inclusive_taxes_entry.config(state=DISABLED)
-
-	reservation_charge_inclusive_taxes_calculation = "{0:,.2f}".format(
-	 float(dialog_commission_inclusive_taxes_calculation.replace(',', '')) +
-	 float(other_commission_calculation.replace(',', '')))
-	reservation_charge_inclusive_taxes_entry.config(state=NORMAL)
-	reservation_charge_inclusive_taxes_entry.delete(0, END)
-	reservation_charge_inclusive_taxes_entry.insert(
-	 END, reservation_charge_inclusive_taxes_calculation)
-	reservation_charge_inclusive_taxes_entry.config(state=DISABLED)
-
-	total_to_be_billed_calculation = "{0:,.2f}".format(
-	 float(ticket_price_calculation.replace(',', '')) +
-	 float(reservation_charge_inclusive_taxes_calculation.replace(',', '')))
-	total_to_be_billed_entry.config(state=NORMAL)
-	total_to_be_billed_entry.delete(0, END)
-	total_to_be_billed_entry.insert(END, total_to_be_billed_calculation)
-	total_to_be_billed_entry.config(state=DISABLED)
-
-
-right_slr_tab_up = Frame(slr_tab_up)
-right_slr_tab_up.pack(side=LEFT, expand=True, fill=BOTH)
-
-calculate_button = Button(right_slr_tab_up,
-                          text="Calculate",
-                          command=calculation)
-calculate_button.pack(side=BOTTOM, expand=True, fill=X)
-
-slr_tab_down = LabelFrame(slr_tab, text="Calculated Details...")
-slr_tab_down.pack(side=TOP, expand=True, fill=BOTH)
-
-ticket_price_label = Label(slr_tab_down, text="Ticket Price:", justify=LEFT)
-ticket_price_label.grid(sticky=W, row=0, column=0)
-ticket_price_entry = Entry(slr_tab_down, justify=RIGHT)
-ticket_price_entry.insert(END, "1.00")
-ticket_price_entry.config(state=DISABLED)
-ticket_price_entry.grid(sticky=E, row=0, column=1)
-
-reservation_charge_label = Label(
- slr_tab_down, text="Reservation Charges: (Ticket Price * 25%)", justify=LEFT)
-reservation_charge_label.grid(sticky=W, row=1, column=0)
-reservation_charge_entry = Entry(slr_tab_down, justify=RIGHT)
-reservation_charge_entry.insert(END, "0.25")
-reservation_charge_entry.config(state=DISABLED)
-reservation_charge_entry.grid(sticky=E, row=1, column=1)
-
-total_ticket_price_label = Label(slr_tab_down,
-                                 text="Total Ticket Price:",
-                                 justify=LEFT)
-total_ticket_price_label.grid(sticky=W, row=2, column=0)
-total_ticket_price_entry = Entry(slr_tab_down, justify=RIGHT)
-total_ticket_price_entry.insert(END, "1.25")
-total_ticket_price_entry.config(state=DISABLED)
-total_ticket_price_entry.grid(sticky=E, row=2, column=1)
-
-other_commission_label = Label(slr_tab_down,
-                               text="Other Commission:",
-                               justify=LEFT)
-other_commission_label.grid(sticky=W, row=3, column=0)
-other_commission_entry = Entry(slr_tab_down, justify=RIGHT)
-other_commission_entry.insert(END, "0.05")
-other_commission_entry.config(state=DISABLED)
-other_commission_entry.grid(sticky=E, row=3, column=1)
-
-dialog_commission_label = Label(slr_tab_down,
-                                text="Dialog Commission:",
-                                justify=LEFT)
-dialog_commission_label.grid(sticky=W, row=4, column=0)
-dialog_commission_entry = Entry(slr_tab_down, justify=RIGHT)
-dialog_commission_entry.insert(END, "0.12")
-dialog_commission_entry.config(state=DISABLED)
-dialog_commission_entry.grid(sticky=E, row=4, column=1)
-
-tax_amount_label = Label(slr_tab_down, text="Tax Amount:", justify=LEFT)
-tax_amount_label.grid(sticky=W, row=5, column=0)
-tax_amount_entry = Entry(slr_tab_down, justify=RIGHT)
-tax_amount_entry.insert(END, "0.03")
-tax_amount_entry.config(state=DISABLED)
-tax_amount_entry.grid(sticky=E, row=5, column=1)
-
-dialog_commission_inclusive_taxes_label = Label(
- slr_tab_down, text="Dialog Commission Inclusive Taxes:", justify=LEFT)
-dialog_commission_inclusive_taxes_label.grid(sticky=W, row=6, column=0)
-dialog_commission_inclusive_taxes_entry = Entry(slr_tab_down, justify=RIGHT)
-dialog_commission_inclusive_taxes_entry.insert(END, "0.15")
-dialog_commission_inclusive_taxes_entry.config(state=DISABLED)
-dialog_commission_inclusive_taxes_entry.grid(sticky=E, row=6, column=1)
-
-dialog_commission_inclusive_taxes_definition_label = Label(
- slr_tab_down, text="(Dialog Commission + Tax Amount)", justify=LEFT)
-dialog_commission_inclusive_taxes_definition_label.grid(sticky=W,
-                                                        row=7,
-                                                        column=0)
-
-reservation_charge_inclusive_taxes_label = Label(
- slr_tab_down, text="Reservation Charge Inclusive Taxes:", justify=LEFT)
-reservation_charge_inclusive_taxes_label.grid(sticky=W, row=8, column=0)
-reservation_charge_inclusive_taxes_entry = Entry(slr_tab_down, justify=RIGHT)
-reservation_charge_inclusive_taxes_entry.insert(END, "0.20")
-reservation_charge_inclusive_taxes_entry.config(state=DISABLED)
-reservation_charge_inclusive_taxes_entry.grid(sticky=E, row=8, column=1)
-reservation_charge_inclusive_taxes_definition_label = Label(
- slr_tab_down,
- text="(Dialog Commission Inclusive Taxes + Other Commision)",
- justify=LEFT)
-
-reservation_charge_inclusive_taxes_definition_label.grid(sticky=W,
-                                                         row=9,
-                                                         column=0,
-                                                         columnspan=2)
-
-total_to_be_billed_label = Label(slr_tab_down,
-                                 text="Total to be Billed:",
-                                 justify=LEFT)
-total_to_be_billed_label.grid(sticky=W, row=10, column=0)
-total_to_be_billed_entry = Entry(slr_tab_down, justify=RIGHT)
-total_to_be_billed_entry.insert(END, "1.20")
-total_to_be_billed_entry.config(state=DISABLED)
-total_to_be_billed_entry.grid(sticky=E, row=10, column=1)
-
-print('ended')
-root.mainloop()
