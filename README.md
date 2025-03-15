@@ -21,5 +21,3 @@ If you'd like to contribute to the development of Fusion Calculator, feel free t
 ## Acknowledgments
 
 Special thanks to Dialog Business Services (Pvt) Ltd. for providing the inspiration for this project.
-
-Feel free to customize this README file to suit your needs. I hope this helps!
